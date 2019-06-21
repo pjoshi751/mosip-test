@@ -1,0 +1,307 @@
+Command to build specific module:
+mvn install -pl registration-processor --also-make  -DskipTests -Dspring.cloud.config.label=master --amd
+==============================
+For postgress
+$ sudo su postgres
+$ sudo vim /etc/postgresql/10/main/pg_hba.conf/
+
+Change to following:
+
+local   all             all                                     trust 
+host    all             all             127.0.0.1/32            trust
+
+Runs on port 5432
+
+=============================
+
+To run an sql script, first login as postgres user:
+$ sudo su postgres
+$ psql -f <sql file> -U sysadmin -W
+password: 'mosip'
+
+To login into psql using a specific user without login in as postres you have to give the db name too:
+$ psql -d <dbname> -U <username> -W
+
+Enter password that was set for this user.
+=============================
+# Following changes in db scripts 
+
+diff --git a/scripts/database/mosip_regprc/mosip_regprc_db.sql b/scripts/database/mosip_regprc/mosip_regprc_db.sql
+index fc5b0b9311..8ea1ef51d1 100644
+--- a/scripts/database/mosip_regprc/mosip_regprc_db.sql
++++ b/scripts/database/mosip_regprc/mosip_regprc_db.sql
+@@ -4,6 +4,7 @@ CREATE DATABASE mosip_regprc
+ 	LC_COLLATE = 'en_US.UTF-8'
+ 	LC_CTYPE = 'en_US.UTF-8'
+ 	TABLESPACE = pg_default
++        TEMPLATE = template0
+ 	OWNER = sysadmin;
+ -- ddl-end --
+ COMMENT ON DATABASE mosip_regprc IS 'The data related to Registration process flows and transaction will be maintained in this database. This database also maintains data that is needed to perform deduplication.';
+diff --git a/scripts/database/mosip_regprc/mosip_role_common.sql b/scripts/database/mosip_regprc/mosip_role_common.sql
+index abeff555ae..64cc19b547 100644
+--- a/scripts/database/mosip_regprc/mosip_role_common.sql
++++ b/scripts/database/mosip_regprc/mosip_role_common.sql
+@@ -1,5 +1,5 @@
+ -- object: sysadmin | type: ROLE --
+--- DROP ROLE IF EXISTS sysadmin;
++DROP ROLE IF EXISTS sysadmin;
+ CREATE ROLE sysadmin WITH 
+ 	SUPERUSER
+ 	CREATEDB
+@@ -7,25 +7,25 @@ CREATE ROLE sysadmin WITH
+ 	INHERIT
+ 	LOGIN
+ 	REPLICATION
+-	PASSWORD 'Mosipadm@dev123';
++	PASSWORD 'mosip';
+ -- ddl-end --
+ 
+ -- object: dbadmin | type: ROLE --
+--- DROP ROLE IF EXISTS dbadmin;
++DROP ROLE IF EXISTS dbadmin;
+ CREATE ROLE dbadmin WITH 
+ 	CREATEDB
+ 	CREATEROLE
+ 	INHERIT
+ 	LOGIN
+ 	REPLICATION
+-	PASSWORD 'Mosipadm@dev123';
++	PASSWORD 'mosip';
+ -- ddl-end --
+ 
+ -- object: appadmin | type: ROLE --
+--- DROP ROLE IF EXISTS appadmin;
++DROP ROLE IF EXISTS appadmin;
+ CREATE ROLE appadmin WITH 
+ 	INHERIT
+ 	LOGIN
+-	PASSWORD 'Mosipadm@dev123';
++	PASSWORD 'mosip';
+ -- ddl-end --
+ 
+diff --git a/scripts/database/mosip_regprc/mosip_role_regprcuser.sql b/scripts/database/mosip_regprc/mosip_role_regprcuser.sql
+index 6ef3f87a01..8ca635b880 100644
+--- a/scripts/database/mosip_regprc/mosip_role_regprcuser.sql
++++ b/scripts/database/mosip_regprc/mosip_role_regprcuser.sql
+@@ -1,8 +1,8 @@
+ -- object: regprcuser | type: ROLE --
+--- DROP ROLE IF EXISTS regprcuser;
++DROP ROLE IF EXISTS regprcuser;
+ CREATE ROLE regprcuser WITH 
+ 	INHERIT
+ 	LOGIN
+-	PASSWORD 'Mosip@dev123';
++	PASSWORD 'mosip';
+ -- ddl-end --
+ 
+=================
+Config file path:
+
+spring.cloud.config.url/kernel/spring.profiles.active/spring.cloud.config.label
+
+==================
+
+REG PROCESSOR notes:
+
+- Duplicate packet check in the first stage is just checking if the same registration id is present. 
+
+- If there is an exception in the processing, file will get deleted??
+
+public void processPacket(RoutingContext ctx) {
+    try {
+      MessageDTO messageDTO = packetReceiverService.processPacket(file);
+      messageDTO.setMessageBusAddress(MessageBusAddress.PACKET_RECEIVER_OUT);
+      if (messageDTO.getIsValid()) {
+        this.sendMessage(messageDTO);
+      }
+    } finally {
+      if (file != null) {
+        if (file.exists()) {
+          deleteFile(file);
+        }
+      }
+    }
+
+-------------------
+
+"eng" is hardcoded in storePacket():
+
+dto.setLatestTransactionTypeCode(RegistrationTransactionTypeCode.PACKET_RECEIVER.toString());
+		dto.setRegistrationStageName(stageName);
+
+		dto.setRegistrationId(registrationId);
+		dto.setRegistrationType(regEntity.getRegistrationType());
+		dto.setReferenceRegistrationId(null);
+		dto.setStatusCode(RegistrationStatusCode.PROCESSING.toString());
+		dto.setLangCode("eng");
+		dto.setStatusComment(Sta
+
+
+=================
+To run jar for Kernel UIN generator, add the following in kernel-dev.properties:
+
+mosip.kernel.keymanager-service-sign-url= http://localhost/sign  # Puneet: dummy for testing
+
+===============
+Not sure why this error is shown in the log while running UIN  generator jar:
+
+2019-06-11 09:17:01,794 [vert.x-eventloop-thread-3] INFO [o.s.c.a.ConfigurationClassParser].processPropertySource.459 : Properties location [classpath:application-${spring.profiles.active}.properties] not resolvable: class path resource [application-dev.properties] cannot be opened because it does not exist
+=====================
+
+Why are exceptions and ERRORs raised inside code if GET request is sent instead of post
+
+2019-06-11 12:20:13,237 [http-nio-8091-exec-8] ERROR [i.m.k.c.e.ExceptionUtils].logRootCause.122 : Exception : Request method 'GET' not supported
+2019-06-11 12:20:13,239 [http-nio-8091-exec-8] ERROR [i.m.k.c.e.ExceptionUtils].logRootCause.123 : RootCause Exception : 
+org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' not supported
+	at org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping.handleNoMatch(RequestMappingInfoHandlerMapping.java:198)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.lookupHandlerMethod(AbstractHandlerMethodMapping.java:376)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.getHandlerInternal(AbstractHandlerMethodMapping.java:316)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.getHandlerInternal(AbstractHandlerMethodMapping.java:62)
+	at org.springframework.web.servlet.handler.AbstractHandlerMapping.getHandler(AbstractHandlerMapping.java:350)
+	at org.springframework.web.servlet.DispatcherServlet.getHandler(DispatcherServlet.java:1188)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:964)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:925)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:974)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:866)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:635)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:851)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:742)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:200)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.filterAndRecordMetrics(WebMvcMetricsFilter.java:123)
+	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:111)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.boot.actuate.web.trace.servlet.HttpTraceFilter.doFilterInternal(HttpTraceFilter.java:84)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at io.mosip.kernel.auth.config.ReqResFilter.doFilter(ReqResFilter.java:47)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at io.mosip.kernel.auth.config.CorsFilter.doFilter(CorsFilter.java:44)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:127)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:91)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:170)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:200)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at io.mosip.kernel.auth.adapter.filter.CorsFilter.doFilterInternal(CorsFilter.java:39)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:66)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:357)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:270)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:200)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:198)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:496)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:803)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:790)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1468)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+==========================
+Error in documentation of Auth APIs "v1"
+Resource URL
+POST /v/1authenticate/useridPwd
+==============
+
+Services needed to run packet receiver stage:
+
+packet-receiver-stage:  port 8081 (does not use spring boot)
+registration-processor-registration-status-service-impl :  port 8083
+
+=================
+- Set HDFS security to false in regproc properties, otherwise Kerbros will be used and the run will fail.
+- Set encryption to false in registration-processor-dev.properties otherwise DigitalSignature exception will be raised: 
+  registration.processor.signature.isEnabled=false
+============
+
+Why should these appears as error messages.  It should be logger.info:
+
+if (token == null) {
+			ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
+			ServiceError error = new ServiceError(AuthAdapterErrorCode.UNAUTHORIZED.getErrorCode(),
+					"Authentication Failed");
+			errorResponse.getErrors().add(error);
+			httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+			httpServletResponse.setContentType("application/json");
+			httpServletResponse.setCharacterEncoding("UTF-8");
+			httpServletResponse.getWriter().write(convertObjectToJson(errorResponse));
+			logger.error("\n\n Exception : Authorization token not present > " + httpServletRequest.getRequestURL()
+					+ "\n\n");
+			return null;
+		}
+		AuthToken authToken = new AuthToken(token);
+		return getAuthenticationManager().authenticate(authToken);
+
+=============
+LDAP default port 10389
+LDAPS default port 10636
+====
+API: Auth response has field "responsetime". Slight misnomer. It should be "responseTimestamp". responsetime typically would mean time taken to respond.
+
+For invalid credentials ERROR should not be logged -- it is a normal case of invalid credentials. 
+==
+
+Incorrect API:
+POST /v1/authorize/validateToken
+Should be:
+/v1/authmanager/authorize/validateToken
