@@ -123,9 +123,22 @@ public void processPacket(RoutingContext ctx) {
       }
     }
 
--------------------
+---------
+Since local instances do not have HTTPS, change the following in 
+registration-processor/registration-processor-core/src/main/java/io/mosip/registration/processor/core/token/validation/TokenValidator.java
+:
 
-"eng" is hardcoded in storePacket():
+-import javax.net.ssl.HttpsURLConnection;
++import java.net.HttpURLConnection;
+
+-HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
++HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+See mosip-test/query_test.py for ports and local urls for various modules
+=======================
+
+QUESTION:
+"eng" is hardcoded in storePacket(): Should it be read from config?
 
 dto.setLatestTransactionTypeCode(RegistrationTransactionTypeCode.PACKET_RECEIVER.toString());
 		dto.setRegistrationStageName(stageName);
@@ -307,18 +320,52 @@ Install LDAP as per Wiki guidelines.
 Start ldap
 $  sudo service apacheds-2.0.0.AM25-default start
 
-====
+Run LDAP ui utility to load .ldif files available in mosip-test/ldap
+./ApacheDirectoryStudio
+
+============
 API: Auth response has field "responsetime". Slight misnomer. It should be "responseTimestamp". responsetime typically would mean time taken to respond.
 
 For invalid credentials ERROR should not be logged -- it is a normal case of invalid credentials. 
-==
+============
 
 Incorrect API:
 POST /v1/authorize/validateToken
 Should be:
 /v1/authmanager/authorize/validateToken
 
-===
+=============
 Unknown except but no error thrown on registration packet receiver.  The api
 gets the following response:
 Response Data = b'{"errors":[{"errorCode":"RPR-PKR-007","message":"Unknown Exception"}],"id":"mosip.registration.packet","version":"1.0","responsetime":"2019-06-21T14:56:15.756Z"}'
+
+===============
+
+In RegProcessorLogger, the paths are hard coded.  By default on Ubuntu /home/logs is not accessible.  Shouldn't these be read from a config:
+
+mosipRollingFileAppender.setAppenderName("fileappender");
+        mosipRollingFileAppender.setFileName("/home/logs/registrationProcessor.log");
+        mosipRollingFileAppender.setFileNamePattern("/home/logs/registrationProcessor-%d{yyyy-MM-dd}-%i.log");
+
+Currently, change the dir to /tmp
+
+==================
+General programming quality is poor:
+    var3 = APIAuthorityList.PACKETRECEIVER.getList();
+            var4 = var3.length;
+
+            for(var5 = 0; var5 < var4; ++var5) {
+                assignedRole = var3[var5];
+                if (role.contains(assignedRole)) {
+                    return true;
+                }
+            }
+
+Why should we use "contains" and not == ?
+
+
+     allowedRoles = APIAuthorityList.PACKETRECEIVER.getList();
+     for (int i = 0; i < allowedRoles.length; i ++)
+         if (role == allowedRoles[i])
+             return True;
+
