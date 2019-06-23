@@ -10,6 +10,7 @@ REG_STATUS_ROOT = 'http://localhost:8083'
 AUTH_ROOT = 'http://localhost:8091' 
 REG_ID = '10003100240000120190531035514'
 ZIP_FILE = 'qa/%s.zip' % REG_ID
+TIMESTAMP = "2019-02-14T12:40:59.768Z"
 
 def print_response(r):
     print(r.headers)
@@ -38,11 +39,13 @@ def register(token, reg_root, auth_root, zip_file):
 
 def register_sync(token, url_root):
     url = url_root + '/registrationprocessor/v1/registrationstatus/sync'
+    headers = {'Center-Machine-RefId': '10011_10011', 
+               'timestamp': TIMESTAMP}
     cookies = {'Authorization' : token}
     j = {
         "id": "mosip.registration.sync",
         "version": "1.0",
-        "requesttime": "2019-02-14T12:40:59.768Z",
+        "requesttime": TIMESTAMP, 
         "request": [{
             "registrationId": REG_ID, 
             "registrationType": "NEW",
@@ -58,7 +61,7 @@ def register_sync(token, url_root):
         }]      
     }
     
-    r = requests.post(url, json = j, cookies=cookies) 
+    r = requests.post(url, json = j, headers=headers, cookies=cookies) 
 
     return r
 
@@ -68,7 +71,7 @@ def auth(root_url):
 	    "id": "mosip.io.userId.pwd",
         "metadata" : {},
 	    "version":"1.0",	
-	    "requesttime":"2019-06-18T10:15:30.768Z",
+	    "requesttime": TIMESTAMP,
 	    "request": {
             "appId" : "registrationprocessor",
 		    "userName": "registration_admin",
