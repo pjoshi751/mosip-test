@@ -269,6 +269,14 @@ packet-receiver-stage:  port 8081 (does not use spring boot)
 registration-processor-registration-status-service-impl :  port 8083
 
 =================
+Hadoop install:
+https://linuxconfig.org/how-to-install-hadoop-on-ubuntu-18-04-bionic-beaver-linux
+
+To start hadoop:
+$ sudu su hadoop
+$ start-dfs.sh
+$ start-yarn.sh
+
 - Set HDFS security to false in regproc properties, otherwise Kerbros will be used and the run will fail.
 - Set encryption to false in registration-processor-dev.properties otherwise DigitalSignature exception will be raised: 
   registration.processor.signature.isEnabled=false
@@ -295,6 +303,10 @@ if (token == null) {
 =============
 LDAP default port 10389
 LDAPS default port 10636
+Install LDAP as per Wiki guidelines.  
+Start ldap
+$  sudo service apacheds-2.0.0.AM25-default start
+
 ====
 API: Auth response has field "responsetime". Slight misnomer. It should be "responseTimestamp". responsetime typically would mean time taken to respond.
 
@@ -305,3 +317,8 @@ Incorrect API:
 POST /v1/authorize/validateToken
 Should be:
 /v1/authmanager/authorize/validateToken
+
+===
+Unknown except but no error thrown on registration packet receiver.  The api
+gets the following response:
+Response Data = b'{"errors":[{"errorCode":"RPR-PKR-007","message":"Unknown Exception"}],"id":"mosip.registration.packet","version":"1.0","responsetime":"2019-06-21T14:56:15.756Z"}'
