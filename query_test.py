@@ -3,10 +3,13 @@
 import json
 import requests
 import os
+import json
 
 REG_ROOT = 'http://localhost:8081'
+REG_STATUS_ROOT = 'http://localhost:8083'
 AUTH_ROOT = 'http://localhost:8091' 
-ZIP_FILE = '12345.zip'
+REG_ID = '10003100240000120190531035514'
+ZIP_FILE = 'qa/%s.zip' % REG_ID
 
 def print_response(r):
     print(r.headers)
@@ -16,11 +19,48 @@ def print_response(r):
     print('Size = %s' % len(r.content))
     print('Response Data = %s' % r.content)
 
-def register(root_url, zip_file):
-    url = root_url + '/registrationprocessor/v1/packetreceiver/registrationpackets'
+def get_token(response):
+    cookies = response.headers['Set-Cookie'].split(';')
+    for cookie in cookies:
+        key = cookie.split('=')[0]
+        value = cookie.split('=')[1]
+        if key == 'Authorization':
+            return value 
+
+    return None
+ 
+def register(token, reg_root, auth_root, zip_file):
+    url = reg_root + '/registrationprocessor/v1/packetreceiver/registrationpackets'
     files = {'file' : (zip_file, open(zip_file, 'rb'))}
-    r = requests.post(url, files = files) 
-    print_response(r)
+    cookies = {'Authorization' : token}
+    r = requests.post(url, files = files, cookies=cookies) 
+    return r
+
+def register_sync(token, url_root):
+    url = url_root + '/registrationprocessor/v1/registrationstatus/sync'
+    cookies = {'Authorization' : token}
+    j = {
+        "id": "mosip.registration.sync",
+        "version": "1.0",
+        "requesttime": "2019-02-14T12:40:59.768Z",
+        "request": [{
+            "registrationId": REG_ID, 
+            "registrationType": "NEW",
+            "packetHashValue": "63a77e01bb7488e8b9674d2b4999c906bece3feb3a3fd9137794eb5dbbc3d217",
+            "packetSize": 448062,
+            "supervisorStatus": "APPROVED",
+            "supervisorComment": "Approved, all good",
+            "langCode": "eng",
+            "optionalValues": [{
+                "key": "CNIE",
+                "value": "122223456"
+            }]
+        }]      
+    }
+    
+    r = requests.post(url, json = j, cookies=cookies) 
+
+    return r
 
 def auth(root_url):
     url = root_url + '/v1/authmanager/authenticate/useridPwd' 
@@ -31,15 +71,25 @@ def auth(root_url):
 	    "requesttime":"2019-06-18T10:15:30.768Z",
 	    "request": {
             "appId" : "registrationprocessor",
-		    "userName": "110001",
+		    "userName": "registration_admin",
 		    "password": "mosip"
         }
 	}
     r = requests.post(url, json = j)
-    print_response(r)
+    return r
   
+def validate_token(token, root_url):
+    url = root_url + '/v1/authmanager/authorize/validateToken'
+    cookies = {'Authorization' : token}
+    r = requests.post(url, cookies=cookies) 
+    return r
 
 if __name__=='__main__':
-    #register(REG_ROOT, ZIP_FILE)
-    auth(AUTH_ROOT)
+    r = auth(AUTH_ROOT)
+    token = get_token(r)
+    #r = validate_token(token, AUTH_ROOT)
+    r = register_sync(token, REG_STATUS_ROOT)
+    #r = register(token, REG_ROOT, AUTH_ROOT, ZIP_FILE)
+    print_response(r)
+    exit(0) 
 
