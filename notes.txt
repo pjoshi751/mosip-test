@@ -98,10 +98,12 @@ index 6ef3f87a01..8ca635b880 100644
  
 =================
 Config file path:
-
 spring.cloud.config.url/kernel/spring.profiles.active/spring.cloud.config.label
-
 ==================
+Config server:
+Run config server as 
+$ cd ~/projects/mosip/config-server
+$ mvn spring-boot:run
 
 REG PROCESSOR notes:
 
@@ -289,14 +291,6 @@ The above code could be written as:
      }
 
 ================
-BUG
-
-public enum APIAuthorityList {
-    PACKETRECEIVER(new String[]{"REGISTRATION_ ADMIN", "REGISTRATION_PROCESSOR", "REGISTRATION_OFFICER", "REGISTRATION_SUPERVISOR"}),
-
-Should be REGISTRATION_ADMIN
-
-==============
 
 COMMENT:
 
