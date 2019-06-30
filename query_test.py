@@ -3,12 +3,15 @@
 import json
 import requests
 import os
-import json
 
 REG_ROOT = 'http://localhost:8081'
 REG_STATUS_ROOT = 'http://localhost:8083'
 AUTH_ROOT = 'http://localhost:8091' 
+CRYPTOMANAGER_ROOT = 'http://localhost:8087'
+KEYMANAGER_ROOT = 'http://localhost:8188'
 REG_ID = '10003100240000120190531035514'
+CLIENTID = '10011'
+
 ZIP_FILE = 'qa/%s.zip' % REG_ID
 TIMESTAMP = "2019-02-14T12:40:59.768Z"
 
@@ -39,7 +42,7 @@ def register(token, reg_root, auth_root, zip_file):
 
 def register_sync(token, url_root):
     url = url_root + '/registrationprocessor/v1/registrationstatus/sync'
-    headers = {'Center-Machine-RefId': '10011_10011', 
+    headers = {'Center-Machine-RefId': CLIENTID, 
                'timestamp': TIMESTAMP}
     cookies = {'Authorization' : token}
     j = {
@@ -87,12 +90,32 @@ def validate_token(token, root_url):
     r = requests.post(url, cookies=cookies) 
     return r
 
+def encrypt(data, token, root_url):  # String or binary
+    url = root_url + '/v1/cryptomanager/encrypt'
+    cookies = {'Authorization' : token}
+    r = requests.post(url, json = data, cookies=cookies) 
+    return r 
+
 if __name__=='__main__':
     r = auth(AUTH_ROOT)
     token = get_token(r)
-    #r = validate_token(token, AUTH_ROOT)
-    r = register_sync(token, REG_STATUS_ROOT)
+    r = validate_token(token, AUTH_ROOT)
+    #r = register_sync(token, REG_STATUS_ROOT)
     #r = register(token, REG_ROOT, AUTH_ROOT, ZIP_FILE)
+    data = {
+        "id": "TST",
+        "version": "1.0",
+        "metadata": {},
+        "requesttimeStamp": "2018-11-10T06:12:52.994Z",
+      	"request": {
+      		"applicationId": "REGISTRATION",
+      		"data": "Hello World",
+      		"referenceId": "REF01",
+      		"salt": None,
+      		"timeStamp": "2018-11-10T06:12:52.994Z"
+      	}	  
+    }
+    r = encrypt(data, token, CRYPTOMANAGER_ROOT)
     print_response(r)
     exit(0) 
 

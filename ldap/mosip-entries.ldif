@@ -1027,7 +1027,7 @@ mail: registration_admin@mosip.io
 mobile: 7809875645
 rid: 100011000100002201905101215876
 uid: registration_admin
-userPassword: {SSHA256}8gWVMbdyp6cSRsM0WIb6XU0XSeqv8cDJODJgXBJqqekUF8i3AGRzFg==
+userPassword: {SHA512}WdSCGMngFZqv+EVnOoN06vsVLJExBXnDLgSoro30NPatX8OHt6Oxv2XdFjtneLdguBJ0Yb341auf6MGAWp/WMw==
 
 dn: uid=ida_app_user,ou=people,c=morocco
 objectClass: userDetails
