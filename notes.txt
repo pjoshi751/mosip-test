@@ -99,6 +99,13 @@ index 6ef3f87a01..8ca635b880 100644
 =================
 Config file path:
 spring.cloud.config.url/kernel/spring.profiles.active/spring.cloud.config.label
+=================
+To run a jar
+
+java -Xmx5000000000 -jar <jarname>
+
+The -Xmx option sets the max heap size for java process, this will reduce
+the total  memory consumption for running multiple jars on a laptop.
 ==================
 Config server:
 Run config server as 
