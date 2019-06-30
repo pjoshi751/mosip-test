@@ -316,3 +316,6 @@ Messages should also be logged in my opinion.
             throw new KeystoreProcessingException(KeymanagerErrorCode.KEYSTORE_PROCESSING_ERROR.getErrorCode(), KeymanagerErrorCode.KEYSTORE_PROCESSING_ERROR.getErrorMessage() + var3.getMessage());
         }
 ===========
+Set the right validate url in application-dev.properties.
+auth.server.validate.url=http://localhost:8091/v1/authmanager/authorize/validateToken
+
