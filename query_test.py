@@ -96,10 +96,17 @@ def encrypt(data, token, root_url):  # String or binary
     r = requests.post(url, json = data, cookies=cookies) 
     return r 
 
+def get_public_key(token, appid, root_url):
+    url = root_url + '/v1/keymanager/publickey/%s?timeStamp=2018-11-10T06:12:52.994Z' % appid 
+    #http://localhost:8188/v1/keymanager/publickey/REGISTRATION?timeStamp=2018-12-09T06%3A39%3A03.683Z 
+    cookies = {'Authorization' : token}
+    r = requests.get(url, cookies=cookies) 
+    return r
+
 if __name__=='__main__':
     r = auth(AUTH_ROOT)
     token = get_token(r)
-    r = validate_token(token, AUTH_ROOT)
+    #r = validate_token(token, AUTH_ROOT)
     #r = register_sync(token, REG_STATUS_ROOT)
     #r = register(token, REG_ROOT, AUTH_ROOT, ZIP_FILE)
     data = {
@@ -110,12 +117,14 @@ if __name__=='__main__':
       	"request": {
       		"applicationId": "REGISTRATION",
       		"data": "Hello World",
-      		"referenceId": "REF01",
+      		"referenceId": "REF03",
       		"salt": None,
       		"timeStamp": "2018-11-10T06:12:52.994Z"
       	}	  
     }
-    r = encrypt(data, token, CRYPTOMANAGER_ROOT)
+    #r = encrypt(data, token, CRYPTOMANAGER_ROOT)
+     
+    r = get_public_key(token, 'REGISTRATION', KEYMANAGER_ROOT) 
     print_response(r)
     exit(0) 
 
