@@ -4,7 +4,7 @@ import os
 import sys
 
 # log_level to be specified 'info', 'error', 'debug', 'warning' 
-def init_logger(module_name, file_path, max_bytes, log_level, nfiles):
+def init_logger(logger, file_path, max_bytes, log_level, nfiles):
     dirname = os.path.dirname(file_path)    
     if dirname:
         if not os.path.exists(dirname):
@@ -12,7 +12,6 @@ def init_logger(module_name, file_path, max_bytes, log_level, nfiles):
 
     log_level_map = {'info' : logging.INFO, 'error' : logging.ERROR, 
                      'debug' : logging.DEBUG, 'warning' : logging.WARNING}
-    logger = logging.getLogger(module_name)
     logger.setLevel(logging.DEBUG)  # Set to lowest level
 
     # Add Rotating file handler
