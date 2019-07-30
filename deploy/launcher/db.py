@@ -7,7 +7,6 @@ from config import *
 logger = logging.getLogger(__name__)
 
 def install_postgres():
-    # Runs on port 5432
     logger.info('Installing postgres')
     command('sudo yum install postgresql-server postgresql-contrib')
     command('sudo postgresql-setup initdb; sudo systemctl start postgresql')

@@ -17,10 +17,9 @@ def give_home_read_permissions():
 
 def install_docker():
     logger.info('Install Docker')
-    subprocess.call('sudo yum check-update', shell=True)
-    subprocess.call('curl -fsSL https://get.docker.com/ | sh', shell=True)
-    # TODO: Handle case of ^C to abort the above operation.
-
+    command('sudo yum check-update')
+    command('curl -fsSL https://get.docker.com/ | sh')
+        
 def install_epel():
     logger.info('Installing  EPEL')
     subprocess.call('sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm', shell=True)
@@ -30,10 +29,11 @@ def main():
     init_logger(logger, 'logs/launcher.log', 10000000, 'info', 2)
 
     give_home_read_permissions() # For various access
-    #install_epel()
-    #install_docker()
-    #install_postgres()
+    install_epel()
+    install_docker()
+    install_postgres()
     init_db()
+    logger.info('Install done')
 
 if __name__== '__main__':
     main()
