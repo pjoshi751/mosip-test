@@ -11,9 +11,9 @@ DB_SCRIPTS_PATH = '/home/puneet/mosip/mosip-platform/db_scripts/'
 logger = None # Global
 
 def command(cmd):
-    err = subprocess.call(cmd, shell=True)
-    if err: 
-        logger.error(cmd)
+    r = subprocess.run(cmd, shell=True)
+    if r.returncode != 0: 
+        logger.error(r)
         
 def give_home_read_permissions():
     logger.info('Giving read persmissons to home directory')
@@ -32,27 +32,36 @@ def install_epel():
 def install_postgres():
     # Runs on port 5432
     logger.info('Installing postgres')
-    subprocess.call('sudo yum install postgresql-server postgresql-contrib', shell=True)
-    subprocess.call('sudo postgresql-setup initdb; sudo systemctl start postgresql', shell=True)
+    command('sudo yum install postgresql-server postgresql-contrib')
+    command('sudo postgresql-setup initdb; sudo systemctl start postgresql')
 
-def init_db_scripts():
+def configure_postgres():
+    logger.info('Modify the pg_hba.conf file for "trust" access')
+    command('sudo -u postgres mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.bak')
+    command('sudo -u postgres cp resources/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf')
+    #command('sudo systemctl restart postgresql') 
+
+def init_db():
+
+    configure_postgres()
     pwd = os.getcwd()    
     os.chdir(DB_SCRIPTS_PATH)
     os.chdir('./mosip_kernel') 
-    subprocess.run('sudo -u postgres psql -f mosip_role_common.sql', shell=True)
-    subprocess.run('sudo -u postgres psql -f mosip_role_kerneluser.sql', shell=True)
-    subprocess.run('sudo -u postgres psql -f mosip_kernel_db.sql -U sysadmin -W', shell=True)
+    command('sudo -u postgres psql -f mosip_role_common.sql')
+    command('sudo -u postgres psql -f mosip_role_kerneluser.sql')
+    command('sudo -u postgres psql -f mosip_kernel_db.sql')
     
 
 def main():
     global logger
     logger = init_logger('LAUNCHER', 'logs/launcher.log', 10000000, 'info', 2)
 
-    give_home_read_permissions()
+    give_home_read_permissions() # For various access
     #install_epel()
     #install_docker()
     #install_postgres()
-    init_db_scripts() 
+    init_db()
 
 if __name__== '__main__':
     main()
+       
