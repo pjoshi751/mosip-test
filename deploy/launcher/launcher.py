@@ -28,10 +28,10 @@ def main():
     global logger
     init_logger(logger, 'logs/launcher.log', 10000000, 'info', 2)
 
-    give_home_read_permissions() # For various access
-    install_epel()
-    install_docker()
-    install_postgres()
+    #give_home_read_permissions() # For various access
+    #install_epel()
+    #install_docker()
+    #install_postgres()
     init_db()
     logger.info('Install done')
 
