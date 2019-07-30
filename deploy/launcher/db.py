@@ -6,6 +6,7 @@ from config import *
 
 logger = logging.getLogger(__name__)
 
+PG_CONF_DIR = '/var/lib/pgsql/10/data'
 SQL_SCRIPTS = [  # These are in a paritcular sequence
     'mosip_kernel/mosip_role_common.sql',
     'mosip_kernel/mosip_role_kerneluser.sql',
@@ -78,14 +79,18 @@ SQL_SCRIPTS = [  # These are in a paritcular sequence
 ]
 def install_postgres():
     logger.info('Installing postgres')
-    command('sudo yum install postgresql-server postgresql-contrib')
-    command('sudo postgresql-setup initdb; sudo systemctl start postgresql')
+    command('sudo yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm')
+    command('sudo yum -y install postgresql10')
+    command('sudo yum -y install postgresql10-server')
+    command('sudo /usr/pgsql-10/bin/postgresql-10-setup initdb')
+    command('sudo systemctl enable postgresql-10')
+    command('sudo systemctl start postgresql-10')
 
 def configure_postgres():
     logger.info('Modify the pg_hba.conf file for "trust" access')
-    command('sudo -u postgres mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.bak')
-    command('sudo -u postgres cp resources/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf')
-    command('sudo systemctl restart postgresql') 
+    command('sudo -u postgres mv %s/pg_hba.conf %s/pg_hba.conf.bak' % PG_CONF_DIR)
+    command('sudo -u postgres cp resources/pg_hba.conf %s/pg_hba.conf' % PG_CONF_DIR)
+    command('sudo systemctl restart postgresql-10') 
 
 def init_db():
     configure_postgres()

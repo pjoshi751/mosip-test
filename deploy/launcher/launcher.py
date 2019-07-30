@@ -31,8 +31,8 @@ def main():
     #give_home_read_permissions() # For various access
     #install_epel()
     #install_docker()
-    #install_postgres()
-    init_db()
+    install_postgres()
+    #init_db()
     logger.info('Install done')
 
 if __name__== '__main__':
