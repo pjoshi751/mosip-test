@@ -66,9 +66,9 @@ SQL_SCRIPTS = [  # These are in a paritcular sequence
     'mosip_prereg/mosip_prereg_ddl_deploy.sql',
     'mosip_prereg/mosip_prereg_dml_deploy.sql',
 
-    'mosip_reg/mosip_reg_db.sql',
-    'mosip_reg/mosip_reg_ddl_deploy.sql',
-    'mosip_reg/mosip_reg_dml_deploy.sql',
+    #'mosip_reg/mosip_reg_db.sql',
+    #'mosip_reg/mosip_reg_ddl_deploy.sql',
+    #'mosip_reg/mosip_reg_dml_deploy.sql',
 
     'mosip_regprc/mosip_role_common.sql',
     'mosip_regprc/mosip_role_regprcuser.sql',
@@ -88,7 +88,7 @@ def install_postgres():
 
 def configure_postgres():
     logger.info('Modify the pg_hba.conf file for "trust" access')
-    command('sudo -u postgres mv %s/pg_hba.conf %s/pg_hba.conf.bak' % PG_CONF_DIR)
+    command('sudo -u postgres mv %s/pg_hba.conf %s/pg_hba.conf.bak' % (PG_CONF_DIR, PG_CONF_DIR))
     command('sudo -u postgres cp resources/pg_hba.conf %s/pg_hba.conf' % PG_CONF_DIR)
     command('sudo systemctl restart postgresql-10') 
 
@@ -96,7 +96,10 @@ def init_db():
     configure_postgres()
     pwd = os.getcwd()    
     os.chdir(DB_SCRIPTS_PATH)
-    for sql in SQL_SCRIPTS:
-        command('sudo -u postgres psql -f %s' % sql)
+    for sql_path in SQL_SCRIPTS:
+        sql_dir = os.path.join(DB_SCRIPTS_PATH, os.path.dirname(sql_path)) 
+        sql_file = os.path.basename(sql_path)
+        os.chdir(sql_dir)
+        command('sudo -u postgres psql -f %s' % sql_file)
 
-    os.chdir(pwd) 
+    os.chdir(pwd) # Return back to where we started 
