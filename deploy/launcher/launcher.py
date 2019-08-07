@@ -1,16 +1,18 @@
 #!/usr/bin/python3.6
 # Centos - Get the full DVD iso.  Custom select softwares - select GNU Desktop
 # version while installing in VM.  
+# The script has been tried on CentOS 7
 
 import subprocess
 import time
+import os
 from logger import init_logger
 from db import *
 from config import *
 from common import *
 from ldap import *
 from hdfs import *
-import os
+from clamav import *
 
 logger = logging.getLogger() # Root Logger 
 
@@ -28,20 +30,6 @@ def install_epel():
     logger.info('Installing  EPEL')
     command('sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm')
 
-def install_clamav():
-    logger.info('Installing CLAMAV')
-    command('sudo yum -y install clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd')
-    if not os.path.exists('/etc/clamd.d/scan.conf.original'): 
-        command('sudo cp /etc/clamd.d/scan.conf /etc/clamd.d/scan.conf.original') 
-    command('sudo sed -i -e "s/^Example/#Example/" /etc/clamd.d/scan.conf')
-    command('echo "LocalSocket /var/run/clamd.scan/clamd.sock" | sudo tee -a /etc/clamd.d/scan.conf')
-    command('sudo sed -i -e "s/^Example/#Example/" /etc/freshclam.conf')
-    command('sudo systemctl enable clamd@scan') 
-
-def run_clamav():
-    command('sudo freshclam')
-    command('sudo systemctl start clamd@scan') 
-  
 def main():
     global logger
     init_logger(logger, 'logs/launcher.log', 10000000, 'info', 2)
@@ -55,7 +43,6 @@ def main():
     #install_apacheds()
     #load_ldap(COUNTRY_NAME)
     #run_hdfs()
-    stop_hdfs('6f7386a06294')
     logger.info('Install done')
 
 if __name__== '__main__':
