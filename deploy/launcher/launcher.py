@@ -50,7 +50,8 @@ def main():
     #install_postgres()
     #init_db()
     #install_clamav()
-    load_ldap(COUNTRY_NAME)
+    #install_apacheds()
+    #load_ldap(COUNTRY_NAME)
     logger.info('Install done')
 
 if __name__== '__main__':
