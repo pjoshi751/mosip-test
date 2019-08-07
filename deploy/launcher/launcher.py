@@ -3,11 +3,13 @@
 # version while installing in VM.  
 
 import subprocess
+import time
 from logger import init_logger
 from db import *
 from config import *
 from common import *
 from ldap import *
+from hdfs import *
 import os
 
 logger = logging.getLogger() # Root Logger 
@@ -20,6 +22,7 @@ def install_docker():
     logger.info('Install Docker')
     command('sudo yum check-update')
     command('curl -fsSL https://get.docker.com/ | sh')
+    command('sudo systemctl start docker')
         
 def install_epel():
     logger.info('Installing  EPEL')
@@ -39,7 +42,6 @@ def run_clamav():
     command('sudo freshclam')
     command('sudo systemctl start clamd@scan') 
   
-
 def main():
     global logger
     init_logger(logger, 'logs/launcher.log', 10000000, 'info', 2)
@@ -52,6 +54,8 @@ def main():
     #install_clamav()
     #install_apacheds()
     #load_ldap(COUNTRY_NAME)
+    #run_hdfs()
+    stop_hdfs('6f7386a06294')
     logger.info('Install done')
 
 if __name__== '__main__':
