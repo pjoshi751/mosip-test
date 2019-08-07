@@ -7,6 +7,7 @@ from logger import init_logger
 from db import *
 from config import *
 from common import *
+from ldap import *
 import os
 
 logger = logging.getLogger() # Root Logger 
@@ -32,10 +33,13 @@ def install_clamav():
     command('sudo sed -i -e "s/^Example/#Example/" /etc/clamd.d/scan.conf')
     command('echo "LocalSocket /var/run/clamd.scan/clamd.sock" | sudo tee -a /etc/clamd.d/scan.conf')
     command('sudo sed -i -e "s/^Example/#Example/" /etc/freshclam.conf')
+    command('sudo systemctl enable clamd@scan') 
+
+def run_clamav():
     command('sudo freshclam')
     command('sudo systemctl start clamd@scan') 
-    command('sudo systemctl enable clamd@scan') 
   
+
 def main():
     global logger
     init_logger(logger, 'logs/launcher.log', 10000000, 'info', 2)
@@ -45,7 +49,8 @@ def main():
     #install_docker()
     #install_postgres()
     #init_db()
-    install_clamav()
+    #install_clamav()
+    load_ldap(COUNTRY_NAME)
     logger.info('Install done')
 
 if __name__== '__main__':
