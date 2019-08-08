@@ -6,6 +6,8 @@
 import subprocess
 import time
 import os
+import shutil
+import glob
 from logger import init_logger
 from db import *
 from config import *
@@ -25,17 +27,34 @@ def install_docker():
     command('sudo yum check-update')
     command('curl -fsSL https://get.docker.com/ | sh')
     command('sudo systemctl start docker')
-        
-def install_epel():
+
+def install_tools():
     logger.info('Installing  EPEL')
     command('sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm')
+    logger.info('Installing Maven')
+    command('sudo yum -y install maven')
+
+def install_config_repo(repo_path):
+    logger.info('Creating config git repo for config server')
+    if os.path.exists(repo_path):  # Assuming it is indeed a git repo
+        return 
+    os.makedirs(repo_path)
+    cwd = os.getcwd() 
+    os.chdir(repo_path)
+    command('git init') 
+    files = glob.glob(os.path.join(cwd, '../config/configs/*')) 
+    for f in files:
+        shutil.copy(f, '.')
+    command('git add .')
+    command('git commit -m "Added"')
+    os.chdir(cwd)
 
 def main():
     global logger
     init_logger(logger, 'logs/launcher.log', 10000000, 'info', 2)
 
     give_home_read_permissions() # For various access
-    #install_epel()
+    #install_tools()
     #install_docker()
     #install_postgres()
     #init_db()
@@ -43,6 +62,7 @@ def main():
     #install_apacheds()
     #load_ldap(COUNTRY_NAME)
     #run_hdfs()
+    install_config_repo(CONFIG_REPO)
     logger.info('Install done')
 
 if __name__== '__main__':
