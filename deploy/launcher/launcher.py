@@ -15,6 +15,7 @@ from common import *
 from ldap import *
 from hdfs import *
 from clamav import *
+from config_server import *
 
 logger = logging.getLogger() # Root Logger 
 
@@ -34,21 +35,6 @@ def install_tools():
     logger.info('Installing Maven')
     command('sudo yum -y install maven')
 
-def install_config_repo(repo_path):
-    logger.info('Creating config git repo for config server')
-    if os.path.exists(repo_path):  # Assuming it is indeed a git repo
-        return 
-    os.makedirs(repo_path)
-    cwd = os.getcwd() 
-    os.chdir(repo_path)
-    command('git init') 
-    files = glob.glob(os.path.join(cwd, '../config/configs/*')) 
-    for f in files:
-        shutil.copy(f, '.')
-    command('git add .')
-    command('git commit -m "Added"')
-    os.chdir(cwd)
-
 def main():
     global logger
     init_logger(logger, 'logs/launcher.log', 10000000, 'info', 2)
@@ -62,7 +48,8 @@ def main():
     #install_apacheds()
     #load_ldap(COUNTRY_NAME)
     #run_hdfs()
-    install_config_repo(CONFIG_REPO)
+    #install_config_repo(CONFIG_REPO)
+    run_config_server(CONFIG_REPO, LOGS_DIR)
     logger.info('Install done')
 
 if __name__== '__main__':
