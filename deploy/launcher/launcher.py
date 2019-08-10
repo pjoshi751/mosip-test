@@ -28,6 +28,7 @@ def install_docker():
     command('sudo yum check-update')
     command('curl -fsSL https://get.docker.com/ | sh')
     command('sudo systemctl start docker')
+    command('sudo systemctl enable docker')
 
 def install_tools():
     logger.info('Installing  EPEL')
