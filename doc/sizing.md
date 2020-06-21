@@ -14,7 +14,9 @@ We estimate 30% additional compute capacitiy for administration, monitoring and 
 **Notes** 
 1. The above figures are estimates, derived from performance testing on sandbox setup.
 1. High availability is taken into consideration with assumed replication factor of 2 per service pod/docker 
-1. The above estimates **do not** include hardware/servers needed for
+1. The above estimates **do not** include compute servers needed for
+   1. Database
+   1. HDFS/CEPH
    1. Bio SDK:  compute requirements should be provided by the SDK vendor.
    1. HSM 
    1. ABIS
