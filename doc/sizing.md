@@ -11,7 +11,8 @@ ID Authentication | 2,000,000 auth requests per day | 20 | 4 CPU, 16 GB RAM |
 
 We estimate 30% additional compute capacitiy for administration, monitoring and maintenance.
 
-** Assumptions**:
+**Notes** 
+1. The above figures are estimates, derived for performance testing on sandbox setup.
 1.  High availability is taken into consideration with assumed replication factor of 2 per service pod/docker 
 1.  The above estimates **do not** include hardware/servers needed for
     1. Bio SDK:  compute requirements should be provided by the SDK vendor.
@@ -23,10 +24,7 @@ We estimate 30% additional compute capacitiy for administration, monitoring and 
     1. Disaster recovery:  Setup will be replicated, hence, double the number of servers.
 
 ## Storage
-
-# Bill of Material
-The section below lists all the hardware that is needed for deploying MOSIP.  Only hardware components are listed.  Quantity will depend on specific deployments (based on above estimates).
-
+Storage requirement estimates.
 
 ## All hardware components 
 This section lists the various hardware components needed for deploying MOSIP platform. 
