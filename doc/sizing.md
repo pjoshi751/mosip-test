@@ -1,7 +1,9 @@
 
 The hardware compute and storage requirements for MOSIP core platform are estimated as below.
 
-## Compute 
+## Production
+### Compute
+Compute hardware estimates for a production deployment are given below:
 
 |Module|Capacity|n Servers|Configuration|
 |---|---|---|---|
@@ -12,7 +14,6 @@ ID Authentication | 2,000,000 auth requests per day | 20 | 4 CPU, 16 GB RAM |
 We estimate 30% additional compute capacitiy for administration, monitoring and maintenance.
 
 **Notes** 
-1. The above figures are estimates, derived from performance testing on sandbox setup.
 1. High availability is taken into consideration with assumed replication factor of 2 per service pod/docker 
 1. The above estimates **do not** include compute servers needed for
    1. Database
@@ -25,11 +26,21 @@ We estimate 30% additional compute capacitiy for administration, monitoring and 
    1. External IAM
    1. Disaster recovery:  Setup will be replicated, hence, double the number of servers.
 
-## Storage
-Storage requirement estimates.
+### Storage
+Storage estimates for production deployment are given below:
+
+
+## QA, Staging, Preprod
+Addional compute and storage is needed for QA, staging and pre-production setups:
+
+| Environment | Setup | n Severs | Configuration | Storage |
+|---|---|---|---|---|
+| QA | Sandbox | 13 | 4 CPU, 16 GB RAM | 128 GB SSD| 
+| Staging | Sandbox | 13 | 4 CPU, 16 GB RAM | 128 GB SSD| 
+| Pre-production | Cell | TBD | 4 CPU, 16 GB RAM | TBD |
 
 ## All hardware components 
-This section lists the various hardware components needed for deploying MOSIP platform. 
+This section lists the various hardware components needed for deploying MOSIP platform in the field.
 1. Compute machines (VM/Bare Metal)
 1. DB machines
 1. Storage SAN/NAS 
