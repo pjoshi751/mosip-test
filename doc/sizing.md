@@ -11,9 +11,9 @@ ID Authentication | 2,000,000 auth requests per day | 20 | 4 CPU, 16 GB RAM |
 
 We estimate 30% additional compute capacitiy for administration, monitoring and maintenance.
 
-* Notes *:
+** Assumptions**:
 1.  High availability is taken into consideration with assumed replication factor of 2 per service pod/docker 
-1.  The above estimates *do not* include hardware/servers needed for
+1.  The above estimates **do not** include hardware/servers needed for
     1. Bio SDK:  compute requirements should be provided by the SDK vendor.
     1. HSM
     1. ABIS
