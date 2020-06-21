@@ -1,10 +1,10 @@
 
-The hardware compute and storage requirements for MOSIP core platform are estimated as below
+The hardware compute and storage requirements for MOSIP core platform are estimated as below.
 
 ## Compute 
 
 |Module|Capacity|N servers|Configuration|
----|---|---|---|---|
+|---|---|---|---|
 Pre-registration | 300 concurrent users | 20 | 4 CPU, 16 GB RAM |
 Registration Processor | 200,000 registrations per day | 80 | 4 CPU, 16 GB RAM|
 ID Authentication | 2,000,000 auth requests per day | 20 | 4 CPU, 16 GB RAM |
