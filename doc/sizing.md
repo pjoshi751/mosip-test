@@ -3,7 +3,7 @@ The hardware compute and storage requirements for MOSIP core platform are estima
 
 ## Production
 ### Compute
-Compute hardware estimates for a production deployment are given below:
+Compute hardware estimates for a production deployment:
 
 |Module|Capacity|n Servers|Configuration|
 |---|---|---|---|
@@ -27,7 +27,7 @@ We estimate 30% additional compute capacitiy for administration, monitoring and 
    1. Disaster recovery:  Setup will be replicated, hence, double the number of servers.
 
 ### Storage
-Storage estimates for production deployment are given below:
+Storage estimates for production deployment:
 
 
 ## QA, Staging, Preprod
