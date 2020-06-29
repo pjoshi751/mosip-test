@@ -4,7 +4,7 @@
 Scalability of complex systems is non-trivial especially when there are multiple running components like microservices, databases, storage clusters etc. with complex interactions.  End-to-end performance modelling of such a system poses
 signifcant challenges as the performance of the 'whole' does not have a straight-forward linear relationship to its 'parts'.
 
-To address this scalability problem, MOSIP recommends a cell architecture where hardware and software within a cell is fixed (canned), and the cell is benchmarked for certain capacity.  Such cells, then, may be replicated to scale up capacity in a production depolyment with traffic routed to them via a load balancer.  Ideally, each cell must be islolated from each other without any cross-dependencies.  Practically, however, they may share certain resources.  Scalabilty of such common resources needs to addressed separately.
+To address this scalability problem, MOSIP recommends a cell architecture where hardware and software within a cell is fixed (canned), and the cell is benchmarked for certain capacity.  Such cells, then, may be replicated to scale up capacity in a production depolyment with traffic routed to them via a load balancer.  Ideally, each cell must be islolated from each other without any cross-dependencies.  Practically, though, they may share certain resources.  Scalabilty of such common resources needs to addressed separately.
 
 This document presents cell architecture for all major MOSIP modules for production deployment.
 
