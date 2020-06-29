@@ -9,7 +9,7 @@ MOSIP recommends a cell architecture where hardware and software within a cell i
 This document presents cell architecture for all major MOSIP modules for production deployment.
 
 ## Registration Processor Cell
-![](registration_proessor_cell_arch.png)
+![](registration_processor_cell_arch.png)
 
 The following resources are shared across cells:
 * [ABIS](Automated-Biometric-Identification-System-ABIS.md)
