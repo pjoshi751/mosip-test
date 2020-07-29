@@ -27,7 +27,7 @@ In order to get the best out of mosip and keep manageability high the deployment
 
 The architecture proposed may be deployed on-premise or cloud.  Here, the militarised and demilitarised zones are clearly separated.
 
-[](https://github.com/pjoshi751/mosip-test/blob/master/doc/mosip_deployment_architecture.png)
+![](https://github.com/pjoshi751/mosip-test/blob/master/doc/mosip_deployment_architecture.png)
 
 ## Scalability: Cell based architecture
 For linear scaling of capacity and provisioning of hardware, a cell based architecture may be preferred.
@@ -39,5 +39,5 @@ A hybrid architecture may be considered where benefits of cloud and on-premise a
 
 An example of hybrid architecture is given below:
 
-[](https://github.com/pjoshi751/mosip-test/blob/master/doc/hybrid_architecture.png)
+![](https://github.com/pjoshi751/mosip-test/blob/master/doc/hybrid_architecture.png)
 
