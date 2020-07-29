@@ -17,25 +17,26 @@ In order to get the best out of mosip and keep manageability high the deployment
   * Option ‘Cloud’ - Deploy in a public cloud
   * Option ‘Hybrid’ - Cloud + On Premises
 
-* Platform choices|
+* Platform choices
   * Option 'Open Source' - Proven community favored platforms
   * Option ‘Cloud Native’ - Cutting edge supported cloud technolgies from AWS, Azure, GCP et al
   * Option 'Commercial' - Established and well supported priced packages
 
 
-## Security: MOSIP deployment security zones
+## Security: Deployment with secure zones
 
 The architecture proposed may be deployed on-premise or cloud.  Here, the militarised and demilitarised zones are clearly separated.
-[](mosip_deployment_architecture.png)
-
+[](https://github.com/pjoshi751/mosip-test/blob/master/doc/mosip_deployment_architecture.png)
 
 ## Scalability: Cell based architecture
 For linear scaling of capacity and provisioning of hardware, a cell based architecture may be preferred.
+
 [Cell based architecture](https://docs.mosip.io/platform/build-and-deploy/cell-based-deployment-architecture)
 
 ## Rapid deployment: Hybrid architecture
 A hybrid architecture may be considered where benefits of cloud and on-premise are leveraged. While cloud provides rapid deployment and ease of  management, on-premise can provides security, sovereignty and contorl of sensitive data.
 
 An example of hybrid architecture is given below:
-[](hybrid_architecture.png)
+
+[](https://github.com/pjoshi751/mosip-test/blob/master/doc/hybrid_architecture.png)
 
