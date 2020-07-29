@@ -25,7 +25,7 @@ In order to get the best out of mosip and keep manageability high the deployment
 
 ## Security: Deployment with secure zones
 
-The architecture proposed may be deployed on-premise or cloud.  Here, the militarised and demilitarised zones are clearly separated.
+The architecture proposed may be deployed on-premise or cloud.  Here, all MOSIP modules are installed with clear separation between militarised and demilitarised zones.
 
 ![](https://github.com/pjoshi751/mosip-test/blob/master/doc/mosip_deployment_architecture.png)
 
