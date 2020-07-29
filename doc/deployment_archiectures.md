@@ -30,7 +30,7 @@ The architecture proposed may be deployed on-premise or cloud.  Here, the milita
 ![](https://github.com/pjoshi751/mosip-test/blob/master/doc/mosip_deployment_architecture.png)
 
 ## Scalability: Cell based architecture
-For linear scaling of capacity and provisioning of hardware, a cell based architecture may be preferred.
+For linear scaling of capacity and provisioning of hardware, a cell based architecture (along with secure zones) may be preferred.
 
 [Cell based architecture](https://docs.mosip.io/platform/build-and-deploy/cell-based-deployment-architecture)
 
